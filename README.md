@@ -71,7 +71,8 @@ We used the combinations of two above defined approaches in two ways:
   * Python 3.0 or above
   * Jupyter Notebook
   * Pytorch
-  * Install the packages inside requirements.txt (pip install -r requirements.txt)
+  * Install the packages inside requirements.txt
+
 **Steps:**
   * For method1, run evaluation_method1.ipynb notebook
   * For method2, run evaluation_method2.ipynb notebook
@@ -80,6 +81,8 @@ We used the combinations of two above defined approaches in two ways:
   *	Notebooks are self-explanatory
   * In case of any query(s) please feel free to reach out to us anytime.
 
+## Models
+* Trained Models aren't included in this repository. Please make request if needed. 
 
 ## Dataset
 * Market1501
