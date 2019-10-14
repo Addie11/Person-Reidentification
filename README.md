@@ -8,6 +8,7 @@
 - [Our Approach](#our-approach)
 - [Methods](#methods)
 - [How to use?](#how-to-use-)
+- [Models](#Models)
 - [Dataset](#dataset)
 - [Research Papers:](#research-papers-)
 - [Github Repositories:](#github-repositories-)
