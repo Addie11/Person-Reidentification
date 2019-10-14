@@ -4,8 +4,17 @@
 
 “Given an image/video of a person taken from one camera, re-identification is the process of identifying the person from images/videos taken from a different camera with non-overlapping fields of views. Re-identification is indispensable in establishing consistent labeling across multiple cameras or even within the same camera to re-establish disconnected or lost tracks.” 
 
-**Our Approach**
-To tackle the stated problem, we used combination of two approaches:
+<small><i>Table of Contents</i></small>
+- [Our Approach](#our-approach)
+- [Methods](#methods)
+- [How to use?](#how-to-use-)
+- [Dataset](#dataset)
+- [Research Papers:](#research-papers-)
+- [Github Repositories:](#github-repositories-)
+
+
+## Our Approach
+To solve the stated problem, we used two approaches:
 
 **Person Re-identification using feature mapping:**
 *	A resnet50 model is trained on openly available Market 1501 dataset
@@ -14,7 +23,7 @@ To tackle the stated problem, we used combination of two approaches:
 *	Trained for 15 epochs
 *	Pytorch framework used at the backend
 *	We use the model to generate the feature map of each individual present on the image and store the feature map in the database after assigning the id.
-*	This model returns a vector of size (1, 512)
+*	This model returns a vector of size (512, 1)
 
 **Person Re-identification by Attribute-Assisted Appearance**
 *	Trained a resnet50 model on RAP v2.0 (Richly Annotated Dataset for Pedestrian Attribute Recognition) having 84929 well annotated images
@@ -26,19 +35,63 @@ To tackle the stated problem, we used combination of two approaches:
 *	Trained on 67,433 images
 *	Validated on 16,589 images
 *	Trained for 100 epochs
-*	Model returns a vector of size (1, 82)
+*	Model returns a vector of size (82, 1)
 
-**Dataset**
+## Methods
+We used the combinations of two above defined approaches in two ways:
+
+**Method 1**
+* First model extract feature vector and another model extract attribute vector
+* We use two python pandas data frames:
+  * all_frame_df stores feature vector, attribute score and previously assigned Id for all the individuals
+  * unique_id_df stores only unique feature vector, attribute score and previously assigned Id for every individual
+* Whenever a person comes in an image, we extract the feature vector and the attribute vector for it and compare with feature vectors and attribute vectors present in the unique_id_df
+* For comparison we use Spatial Cosine distance between the vectors and assign the same identity if the similarity result crosses the threshold value or else assign a new identity
+
+**Drawbacks of Method 1:**
+* Model assigns the same id only if the image of individual crosses both the threshold value (Feature threshold and Attribute threshold) at the same time otherwise it assigns a different ID
+* Hence if an image crosses only one of the threshold values then it assigns a different ID.
+
+**Method 2**
+* To overcome the limitations of method1 we came up with method2
+* First model extract features and other attribute vectors
+  * First model (Feature Model) recommends two most similar already seen person, crossing the feature similarity threshold value
+  * Second model (Attribute Model) recommends only one most similar already seen person, crossing the attribute similarity threshold value
+* We then compare the 3 recommended ids if any and take the decision as follows:
+  * Return the most frequent id
+  * Or the one with highest similarity score in case they are different
+  * Assign new Id if above conditions are not fulfilled
+
+**Drawbacks of Method 2:**
+* Model assigns the same id for person who enter the scene from different corners. The reason is as corners are sometime have low illumination, the model recognizes them as same person and then the same id propagates even when the person walks to the center.
+* The solution would be to train a classifier model that can classify person coming from the corners and assign a different unique ID or wait for 2-3 seconds from the moment it starts appearing in the frame and then assign an ID. We thought of doing it but fell short on time due to competition deadline, but we are committed to make it more accurate in the future
+
+## How to use?
+**Pre-requisites:**
+  * Python 3.0 or above
+  * Jupyter Notebook
+  * Pytorch
+  * Install the packages inside requirements.txt (pip install -r requirements.txt)
+**Steps:**
+  * For method1, run evaluation_method1.ipynb notebook
+  * For method2, run evaluation_method2.ipynb notebook
+  * Update the image folder and the csv file with coordinates at the top cell of each notebook
+  * We have already executed the notebooks with our test data images and csv files.  (Images present in ‘data/’ folder and coordinates in ‘coordinates.csv’)
+  *	Notebooks are self-explanatory
+  * In case of any query(s) please feel free to reach out to us anytime.
+
+
+## Dataset
 * Market1501
 * RAP V2.0 (Richly Annotated Dataset for Pedestrian Recognition
 
-**Research Papers:**
+## Research Papers:
 *	http://jankautz.com/publications/JointReID_CVPR19.pdf
 *	https://www.researchgate.net/publication/301817457_A_Richly_Annotated_Dataset_for_Pedestrian_Attribute_Recognition
 *	https://paperswithcode.com/paper/alignedreid-surpassing-human-level
 *	https://paperswithcode.com/paper/a-strong-baseline-and-batch-normalization
 
-**Github Repositories:**
+## Github Repositories:
 *	https://github.com/layumi/Person_reID_baseline_pytorch
 *	https://github.com/dangweili/pedestrian-attribute-recognition-pytorch
 *	https://github.com/wangxiao5791509/Pedestrian-Attribute-Recognition-Paper-List
